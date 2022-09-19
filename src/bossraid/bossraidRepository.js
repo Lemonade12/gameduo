@@ -22,6 +22,23 @@ async function readBossraidHistoryById(raidRecordId) {
   return data;
 }
 
+async function readTotalScoreByUserId(userId) {
+  const data = await bossraid_history.findAll({
+    attributes: [[sequelize.fn("sum", sequelize.col("score")), "totalScore"]],
+    where: { userId: userId },
+    raw: true,
+  });
+  return data;
+}
+async function readBossraidHistoryByUserId(userId) {
+  const data = await bossraid_history.findAll({
+    attributes: ["raidRecordId", "status", "score", "enterTime", "endTime"],
+    where: { userId: userId },
+    order: [["enterTime", "DESC"]],
+  });
+  return data;
+}
+
 async function createBossraidHistory(userId, score, level) {
   console.log(score);
   const info = {
@@ -49,6 +66,8 @@ module.exports = {
   readBossraid,
   readLatestBossraidHistory,
   readBossraidHistoryById,
+  readTotalScoreByUserId,
+  readBossraidHistoryByUserId,
   createBossraidHistory,
   updateBossraidHistory,
 };

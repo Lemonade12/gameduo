@@ -16,7 +16,7 @@ async function readUserById(req, res) {
   try {
     const userId = req.params.userId;
     const data = await userService.readUserById(userId);
-    return res.status(StatusCodes.OK).send({ data });
+    return res.status(StatusCodes.OK).send(data);
   } catch (err) {
     console.log(err);
     return res.status(err.statusCode || 500).json({ message: err.message });
