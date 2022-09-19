@@ -5,4 +5,9 @@ async function createUser() {
   return data;
 }
 
-module.exports = { createUser };
+async function readUserById(userId) {
+  const data = await userRepo.readUserById(userId);
+  return data;
+}
+
+module.exports = { createUser, readUserById };

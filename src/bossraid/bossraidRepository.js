@@ -8,6 +8,13 @@ async function readBossraid() {
   return "123";
 }
 
+async function readLatestBossraidHistory() {
+  const data = await bossraid_history.findOne({
+    order: [["enterTime", "DESC"]],
+  });
+  return data;
+}
+
 async function readBossraidHistoryById(raidRecordId) {
   const data = await bossraid_history.findOne({
     where: { raidRecordId: raidRecordId },
@@ -28,7 +35,7 @@ async function createBossraidHistory(userId, score, level) {
   return data;
 }
 
-async function updateBossraidHistory(userId, raidRecordId, bossRaids, status) {
+async function updateBossraidHistory(raidRecordId, status) {
   const data = await bossraid_history.update(
     { status: status, endTime: new Date() },
     {
@@ -40,6 +47,7 @@ async function updateBossraidHistory(userId, raidRecordId, bossRaids, status) {
 
 module.exports = {
   readBossraid,
+  readLatestBossraidHistory,
   readBossraidHistoryById,
   createBossraidHistory,
   updateBossraidHistory,

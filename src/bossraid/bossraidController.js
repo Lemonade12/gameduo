@@ -24,8 +24,8 @@ async function readBossraidHistory(req, res) {
       console.log(bossRaids[0]);
     }
 
-    const data = await bossraidService.readBossraid();
-    return res.status(StatusCodes.OK).send({ bossRaids });
+    const data = await bossraidService.readBossraidHistory(bossRaids[0]);
+    return res.status(StatusCodes.OK).send(data);
   } catch (err) {
     console.log(err);
     return res.status(err.statusCode || 500).json({ message: err.message });
@@ -53,7 +53,7 @@ async function createBossraidHistory(req, res) {
     }
     const data = await bossraidService.createBossraidHistory(userId, level, bossRaids[0]);
     console.log(data);
-    return res.status(StatusCodes.OK).send({ isEntered: true, raidRecordId: data.raidRecordId });
+    return res.status(StatusCodes.OK).send(data);
   } catch (err) {
     console.log(err);
     return res.status(err.statusCode || 500).json({ message: err.message });
