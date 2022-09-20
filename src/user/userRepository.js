@@ -8,6 +8,14 @@ async function createUser() {
   return data;
 }
 
+async function readUserById(userId) {
+  const data = await user.findOne({
+    where: { userId: userId },
+  });
+  return data;
+}
+
 module.exports = {
   createUser,
+  readUserById,
 };

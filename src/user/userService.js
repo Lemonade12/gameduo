@@ -7,6 +7,13 @@ async function createUser() {
 }
 
 async function readUserById(userId) {
+  const isExistedUser = await userRepo.readUserById(userId);
+  console.log(isExistedUser);
+  if (!isExistedUser) {
+    const error = new Error("존재하지 않는 유저입니다.");
+    error.statusCode = 404;
+    throw error;
+  }
   const totalScore = await bossraidRepo.readTotalScoreByUserId(userId);
   const bossRaidHistory = await bossraidRepo.readBossraidHistoryByUserId(userId);
   const data = { totalScore: totalScore[0].totalScore, bossRaidHistory };

@@ -41,6 +41,11 @@ async function createBossraidHistory(userId, level, bossRaids) {
   if (isEntered) {
     const isEqualLevel = (element) => element.level == level;
     const idx = bossRaids.levels.findIndex(isEqualLevel);
+    if (idx == -1) {
+      const error = new Error("존재하지 않는 level 입니다.");
+      error.statusCode = 404;
+      throw error;
+    }
     const score = bossRaids.levels[idx].score; // 해당 level 의 score 값
     const result = await bossraidRepo.createBossraidHistory(userId, score, level);
     raidRecordId = result.raidRecordId;
