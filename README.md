@@ -47,7 +47,7 @@
 <br>
 
 ## 📌 API DOCS
-- [포스트맨 API DOCS](https://documenter.getpostman.com/view/21381599/2s7YYscjGk)
+- [포스트맨 API DOCS](https://documenter.getpostman.com/view/21381599/2s7Z13k3Ts)
 
 <br><br>
 
