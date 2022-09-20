@@ -1,4 +1,14 @@
 const bossraidRepo = require("./bossraidRepository");
+const redis = require("redis");
+const redisClient = redis.createClient();
+redisClient.on("connect", () => {
+  console.info("Redis connected!");
+});
+redisClient.on("error", (err) => {
+  console.error("Redis Client Error", err);
+});
+redisClient.connect().then();
+//const redisCli = redisClient.v4;
 
 async function readBossraidHistory(bossRaids) {
   const bossRaidLimitSeconds = bossRaids.bossRaidLimitSeconds;
@@ -63,4 +73,50 @@ async function updateBossraidHistory(userId, raidRecordId, bossRaids) {
   }
 }
 
-module.exports = { readBossraidHistory, createBossraidHistory, updateBossraidHistory };
+async function readBossraidRankByUserId(userId) {
+  const value = await redisClient.zRangeWithScores("topRankerInfoList", 0, -1);
+  let topRankerInfoList = [];
+  let myRankingInfo;
+
+  if (value.length !== 0) {
+    // redis에 있는 경우
+    console.log("redis");
+    for (let i = 0; i < value.length; i++) {
+      topRankerInfoList.push({
+        ranking: i,
+        userId: Number(value[value.length - i - 1].value),
+        totalScore: value[value.length - i - 1].score,
+      });
+      if (topRankerInfoList[i].userId == userId) {
+        myRankingInfo = topRankerInfoList[i];
+      }
+    }
+  } else {
+    console.log("db");
+    topRankerInfoList = await bossraidRepo.readBossraidRank();
+    for (let i = 0; i < topRankerInfoList.length; i++) {
+      await redisClient.zAdd("topRankerInfoList", [
+        {
+          score: topRankerInfoList[i].totalScore,
+          value: String(topRankerInfoList[i].userId),
+        },
+      ]);
+      topRankerInfoList[i].ranking = i;
+      topRankerInfoList[i].totalScore = Number(topRankerInfoList[i].totalScore);
+      topRankerInfoList[i].userId = Number(topRankerInfoList[i].userId);
+
+      if (topRankerInfoList[i].userId == userId) {
+        myRankingInfo = topRankerInfoList[i];
+      }
+    }
+  }
+  const data = { topRankerInfoList, myRankingInfo };
+  return data;
+}
+
+module.exports = {
+  readBossraidHistory,
+  createBossraidHistory,
+  updateBossraidHistory,
+  readBossraidRankByUserId,
+};

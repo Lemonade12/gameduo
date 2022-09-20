@@ -62,6 +62,17 @@ async function updateBossraidHistory(raidRecordId, status) {
   return data;
 }
 
+async function readBossraidRank() {
+  const data = await bossraid_history.findAll({
+    attributes: ["userId", [sequelize.fn("sum", sequelize.col("score")), "totalScore"]],
+    where: { status: "성공" },
+    group: "userId",
+    order: [["totalScore", "DESC"]],
+    raw: true,
+  });
+  return data;
+}
+
 module.exports = {
   readBossraid,
   readLatestBossraidHistory,
@@ -70,4 +81,5 @@ module.exports = {
   readBossraidHistoryByUserId,
   createBossraidHistory,
   updateBossraidHistory,
+  readBossraidRank,
 };

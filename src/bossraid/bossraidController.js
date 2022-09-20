@@ -87,4 +87,20 @@ async function updateBossraidHistory(req, res) {
   }
 }
 
-module.exports = { readBossraidHistory, createBossraidHistory, updateBossraidHistory };
+async function readBossraidRank(req, res) {
+  try {
+    const userId = req.body.userId;
+    const data = await bossraidService.readBossraidRankByUserId(userId);
+    return res.status(StatusCodes.OK).send(data);
+  } catch (err) {
+    console.log(err);
+    return res.status(err.statusCode || 500).json({ message: err.message });
+  }
+}
+
+module.exports = {
+  readBossraidHistory,
+  createBossraidHistory,
+  updateBossraidHistory,
+  readBossraidRank,
+};
