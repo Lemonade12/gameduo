@@ -13,10 +13,9 @@ redisClient.connect().then();
 async function readBossraidHistory(bossRaids) {
   const bossRaidLimitSeconds = bossRaids.bossRaidLimitSeconds;
   const latestHistory = await bossraidRepo.readLatestBossraidHistory();
-  console.log(latestHistory);
   let canEnter;
   let enteredUserId;
-  if (latestHistory.status == "성공" || latestHistory.status == "실패") {
+  if (latestHistory == null || latestHistory.status == "성공" || latestHistory.status == "실패") {
     canEnter = true;
   } else {
     //체크 enterTime
@@ -31,12 +30,11 @@ async function readBossraidHistory(bossRaids) {
     }
   }
   const data = { canEnter, enteredUserId };
-  console.log(data);
   return data;
 }
 
 async function createBossraidHistory(userId, level, bossRaids) {
-  //조회하고 입장가능한지 먼저 체크해줘야함 => 조회기능 추가 시
+  //조회하고 입장가능한지 먼저 체크
   const { canEnter } = await readBossraidHistory(bossRaids);
   const isEntered = canEnter;
   let raidRecordId;
@@ -69,6 +67,32 @@ async function updateBossraidHistory(userId, raidRecordId, bossRaids) {
   } else {
     // 3분이하 종료 시  성공
     const data = await bossraidRepo.updateBossraidHistory(raidRecordId, "성공");
+    // 레디스 점수 업데이트
+    const totalScore = await redisClient.zScore("topRankerInfoList", String(userId));
+    const value = await redisClient.zRangeWithScores("topRankerInfoList", 0, -1);
+
+    if (value.length !== 0) {
+      // 레디스에있으면 레디스에 점수추가
+      await redisClient.zAdd("topRankerInfoList", [
+        {
+          score: totalScore + BossraidHistoryInfo.score,
+          value: String(userId),
+        },
+      ]);
+    } else {
+      // 레디스에 없으면 레디스 업데이트
+      let topRankerInfoList = [];
+      topRankerInfoList = await bossraidRepo.readBossraidRank();
+      for (let i = 0; i < topRankerInfoList.length; i++) {
+        await redisClient.zAdd("topRankerInfoList", [
+          {
+            score: topRankerInfoList[i].totalScore,
+            value: String(topRankerInfoList[i].userId),
+          },
+        ]);
+      }
+    }
+
     return data;
   }
 }

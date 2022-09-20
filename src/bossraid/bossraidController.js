@@ -21,7 +21,6 @@ async function readBossraidHistory(req, res) {
         myCache.set("bossRaids", response.data.bossRaids);
       });
       bossRaids = myCache.get("bossRaids");
-      console.log(bossRaids[0]);
     }
 
     const data = await bossraidService.readBossraidHistory(bossRaids[0]);
@@ -49,10 +48,8 @@ async function createBossraidHistory(req, res) {
         myCache.set("bossRaids", response.data.bossRaids);
       });
       bossRaids = myCache.get("bossRaids");
-      console.log(bossRaids[0]);
     }
     const data = await bossraidService.createBossraidHistory(userId, level, bossRaids[0]);
-    console.log(data);
     return res.status(StatusCodes.OK).send(data);
   } catch (err) {
     console.log(err);
@@ -77,7 +74,6 @@ async function updateBossraidHistory(req, res) {
         myCache.set("bossRaids", response.data.bossRaids);
       });
       bossRaids = myCache.get("bossRaids");
-      console.log(bossRaids[0]);
     }
     const data = await bossraidService.updateBossraidHistory(userId, raidRecordId, bossRaids[0]);
     return res.status(StatusCodes.OK).send({ message: "보스레이드 종료" });

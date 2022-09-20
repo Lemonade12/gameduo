@@ -40,7 +40,6 @@ async function readBossraidHistoryByUserId(userId) {
 }
 
 async function createBossraidHistory(userId, score, level) {
-  console.log(score);
   const info = {
     userId: userId,
     score: score,

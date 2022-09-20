@@ -4,7 +4,6 @@ const userService = require("./userService");
 async function createUser(req, res) {
   try {
     const data = await userService.createUser();
-    console.log(data);
     return res.status(StatusCodes.OK).send({ userId: data.userId });
   } catch (err) {
     console.log(err);
